@@ -3,6 +3,7 @@
 //
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 #include "Board.h"
 #include "Crawler.h"
 #include "Hopper.h"
@@ -84,5 +85,16 @@ void Board::displayBugs() const {
         cout << *p_bug << endl;
     }
 }
+
+void Board::findBug(int id) {
+    auto itBug = find_if(bug_vector.begin(), bug_vector.end(),[id](Bug* p_bug) {return p_bug->getId() == id;});
+    if(itBug != bug_vector.end()){
+        cout << *(*itBug) << endl;
+    }
+    else{
+        cout << "bug " << id << " not found" << endl;
+    }
+}
+
 
 

@@ -34,6 +34,8 @@ public:
     void load(const string& fname);
 
     void displayBugs() const;
+
+    void findBug(int id);
 };
 
 
