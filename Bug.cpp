@@ -94,3 +94,28 @@ bool Bug::isAlive() const {
 list<pair<int, int>> Bug::getPath() const {
     return path;
 }
+
+ostream &operator<<(ostream &out, const Bug &bug) {
+    return bug.print(out);
+}
+
+ostream &operator << ( ostream& out, Direction d){
+    switch (d) {
+        case North:
+            out << "North";
+            break;
+        case South:
+            out << "South";
+            break;
+        case West:
+            out << "West";
+            break;
+        case East:
+            out << "East";
+            break;
+    }
+    return out;
+}
+
+
+

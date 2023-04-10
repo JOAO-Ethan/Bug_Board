@@ -3,6 +3,7 @@
 //
 
 #include "Crawler.h"
+#include <iomanip>
 
 #include <cstdlib>
 
@@ -46,4 +47,16 @@ Crawler::Crawler(const Crawler &crawler) : Bug(crawler.getId(),crawler.getPositi
 
 const char Crawler::getType() {
     return 'C';
+}
+
+ostream &Crawler::print(ostream &out) const {
+    stringstream ss;
+    ss <<  '(' << getX() << ',' << getY() <<")";
+    out << left << setw(4) << getId()
+        << setw(8) << "Crawler"
+        << setw(6) << ss.str()
+        <<setw(4) << getSize()
+        <<setw(6) <<  getDirection()
+        <<setw(5) <<  (isAlive()?"Alive" : "Dead");
+    return out;
 }

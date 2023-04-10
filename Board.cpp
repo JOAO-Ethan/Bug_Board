@@ -1,7 +1,7 @@
 //
 // Created by Ethan JOAO on 28/03/23.
 //
-
+#include <iostream>
 #include <fstream>
 #include "Board.h"
 #include "Crawler.h"
@@ -77,6 +77,12 @@ Bug *Board::parseLine(const string &line) {
 
 void Board::getData(stringstream &strm, string &var) {
     getline(strm, var, ';');
+}
+
+void Board::displayBugs() const {
+    for(auto p_bug : bug_vector){
+        cout << *p_bug << endl;
+    }
 }
 
 

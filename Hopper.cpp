@@ -4,6 +4,7 @@
 
 #include "Hopper.h"
 #include <cstdlib>
+#include <iomanip>
 
 void Hopper::move() {
     while (isWayBlocked()) {
@@ -60,5 +61,18 @@ Hopper::Hopper(const Hopper &hopper) : Bug(hopper.getId(), hopper.getPosition(),
 
 const char Hopper::getType() {
     return 'H';
+}
+
+ostream &Hopper::print(ostream &out) const {
+    stringstream ss;
+    ss <<  '(' << getX() << ',' << getY() <<")";
+    out << left << setw(4) << getId()
+        << setw(8) << "Hopper"
+        << setw(6) << ss.str()
+        <<setw(4) << getSize()
+        <<setw(6) <<  getDirection()
+        << setw(2) <<  hopLength
+        <<setw(5) <<  (isAlive()?"Alive" : "Dead");
+    return out;
 }
 

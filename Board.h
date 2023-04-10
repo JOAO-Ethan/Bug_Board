@@ -32,6 +32,8 @@ public:
     Board& operator= (const Board& otherBoard);
 
     void load(const string& fname);
+
+    void displayBugs() const;
 };
 
 

@@ -3,11 +3,13 @@
 //
 #include <utility>
 #include <list>
+#include <ostream>
 
 using namespace std;
 #ifndef JOAO_ETHAN_CA3_BUG_H
 #define JOAO_ETHAN_CA3_BUG_H
 enum Direction : int {North = 1, East = 2, South = 3, West = 4};
+ostream &operator << ( ostream& out, Direction d);
 
 class Bug {
 private:
@@ -33,6 +35,7 @@ public:
 
     virtual void move() =0;
     virtual const char getType() =0;
+    virtual ostream& print(ostream&out) const =0 ;
     //getters
     bool isWayBlocked();
     int getId() const;
@@ -44,6 +47,7 @@ public:
     bool isAlive() const;
     list<pair<int, int>> getPath() const;
 
+    friend ostream &operator<<(ostream &out, const Bug &bug);
 };
 
 

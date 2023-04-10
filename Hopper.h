@@ -6,6 +6,7 @@
 #define JOAO_ETHAN_CA3_HOPPER_H
 
 
+#include <ostream>
 #include "Bug.h"
 
 class Hopper : public Bug{
@@ -22,8 +23,10 @@ public:
 
     void move() override;
     const char getType() override;
+    ostream& print(ostream&out) const override;
     //getters
     int gethopLength();
+
 
 };
 

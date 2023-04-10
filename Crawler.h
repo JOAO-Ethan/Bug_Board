@@ -6,6 +6,7 @@
 #define JOAO_ETHAN_CA3_CRAWLER_H
 
 
+#include <ostream>
 #include "Bug.h"
 
 class Crawler : public Bug {
@@ -17,6 +18,7 @@ public:
     Crawler(const Crawler &crawler);
     void move() override;
     const char getType() override;
+    ostream& print(ostream&out) const override;
 };
 
 
