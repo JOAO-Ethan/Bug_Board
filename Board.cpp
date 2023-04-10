@@ -3,7 +3,6 @@
 //
 
 #include <fstream>
-#include <iostream>
 #include "Board.h"
 #include "Crawler.h"
 #include "Hopper.h"
@@ -24,7 +23,7 @@ Board::~Board() {
     for (auto p_bug: bug_vector) {
         if (p_bug->getType() == 'C') {
             delete (Crawler *) p_bug;
-        }    else if (p_bug->getType() == 'H') {
+        } else if (p_bug->getType() == 'H') {
             delete (Hopper *) p_bug;
         }
     }
@@ -44,6 +43,40 @@ Board &Board::operator=(const Board &otherBoard) {
 }
 
 Board::Board() {
+    load("../bugs.txt");
+};
 
+void Board::load(const string& fname) {
+    ifstream fin(fname);
+    if (fin) {
+        string line;
+        while (getline(fin, line)) {
+            bug_vector.push_back(parseLine(line));
+        }
+    }
 }
+
+Bug *Board::parseLine(const string &line) {
+    stringstream streamline(line);
+    string type, id, x, y, direction, size;
+    getData(streamline, type);
+    getData(streamline, id);
+    getData(streamline, x);
+    getData(streamline, y);
+    getData(streamline, direction);
+    getData(streamline, size);
+    if(type == "H") {
+        string hope;
+        getData(streamline, hope);
+        return new Hopper(stoi(id),stoi(x),stoi(y),Direction(stoi(direction)),stoi(size),stoi(hope));
+    } else if (type=="C") {
+        return new Crawler(stoi(id), stoi(x), stoi(y), Direction(stoi(direction)), stoi(size));
+    }
+    return nullptr;
+}
+
+void Board::getData(stringstream &strm, string &var) {
+    getline(strm, var, ';');
+}
+
 

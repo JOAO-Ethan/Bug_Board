@@ -8,11 +8,16 @@
 
 #include <vector>
 #include <string>
+#include <sstream>
 #include "Bug.h"
 using namespace std;
 class Board {
 private:
     vector<Bug*> bug_vector;
+
+    Bug* parseLine(const string &line);
+
+    static void getData(stringstream &strm, string &var);
 public:
     Board();
 
@@ -26,6 +31,7 @@ public:
     //Assignment operator
     Board& operator= (const Board& otherBoard);
 
+    void load(const string& fname);
 };
 
 
