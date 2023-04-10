@@ -2,6 +2,8 @@
 // Created by Ethan JOAO on 28/03/23.
 //
 
+#include <fstream>
+#include <iostream>
 #include "Board.h"
 #include "Crawler.h"
 #include "Hopper.h"
@@ -39,5 +41,9 @@ Board &Board::operator=(const Board &otherBoard) {
         }
     }
     return *this;
+}
+
+Board::Board() {
+
 }
 

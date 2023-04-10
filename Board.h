@@ -7,12 +7,14 @@
 
 
 #include <vector>
+#include <string>
 #include "Bug.h"
 using namespace std;
 class Board {
 private:
     vector<Bug*> bug_vector;
 public:
+    Board();
 
     //Copy constructor
     Board(const Board& source);
