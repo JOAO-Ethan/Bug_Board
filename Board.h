@@ -36,6 +36,8 @@ public:
     void displayBugs() const;
 
     void findBug(int id);
+
+    void tap();
 };
 
 

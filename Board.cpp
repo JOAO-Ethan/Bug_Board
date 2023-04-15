@@ -96,5 +96,11 @@ void Board::findBug(int id) {
     }
 }
 
+void Board::tap() {
+    for(auto p_bug : bug_vector){
+        p_bug->move();
+    }
+}
+
 
 
