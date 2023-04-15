@@ -49,6 +49,8 @@ public:
 
     void exit();
 
+    bool gameOver();
+
     void displayAllCells();
 };
 

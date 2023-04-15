@@ -13,7 +13,7 @@ ostream &operator << ( ostream& out, Direction d);
 
 class Bug {
 private:
-    int id,size;
+    int id,size, idKiller;
     pair<int,int> position;
     Direction direction;
     bool alive;
@@ -45,11 +45,13 @@ public:
     int getY() const;
     Direction getDirection() const;
     bool isAlive() const;
+    int getIdKiller() const;
     list<pair<int, int>> getPath() const;
 
     friend ostream &operator<<(ostream &out, const Bug &bug);
 
     static string getFullType(char type);
+    void eat(Bug& other);
 };
 
 

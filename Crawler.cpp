@@ -41,7 +41,8 @@ Crawler::Crawler(int id, int x, int y, Direction direction, int size) : Bug(id, 
     // Do nothing
 }
 
-Crawler::Crawler(const Crawler &crawler) : Bug(crawler.getId(),crawler.getPosition(),crawler.getDirection(),crawler.getSize()) {
+Crawler::Crawler(const Crawler &crawler) : Bug(crawler.getId(), crawler.getPosition(), crawler.getDirection(),
+                                               crawler.getSize()) {
 
 }
 
@@ -51,12 +52,17 @@ const char Crawler::getType() {
 
 ostream &Crawler::print(ostream &out) const {
     stringstream ss;
-    ss <<  '(' << getX() << ',' << getY() <<")";
+    ss << '(' << getX() << ',' << getY() << ")";
     out << left << setw(4) << getId()
         << setw(8) << "Crawler"
         << setw(6) << ss.str()
-        <<setw(4) << getSize()
-        <<setw(6) <<  getDirection()
-        <<setw(5) <<  (isAlive()?"Alive" : "Dead");
+        << setw(4) << getSize()
+        << setw(6) << getDirection()
+        << setw(5);
+    if (isAlive()) {
+        out << "Alive";
+    } else {
+        out << "Eaten by " << getIdKiller();
+    }
     return out;
 }

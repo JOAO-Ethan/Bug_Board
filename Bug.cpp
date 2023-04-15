@@ -116,6 +116,16 @@ string Bug::getFullType(char type) {
     }
 }
 
+void Bug::eat(Bug &other) {
+    this->size += other.getSize();
+    other.kill();
+    other.idKiller = id;
+}
+
+int Bug::getIdKiller() const {
+    return idKiller;
+}
+
 ostream &operator << ( ostream& out, Direction d){
     switch (d) {
         case North:

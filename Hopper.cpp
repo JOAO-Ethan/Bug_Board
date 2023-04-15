@@ -72,7 +72,12 @@ ostream &Hopper::print(ostream &out) const {
         <<setw(4) << getSize()
         <<setw(6) <<  getDirection()
         << setw(2) <<  hopLength
-        <<setw(5) <<  (isAlive()?"Alive" : "Dead");
+        <<setw(5);
+        if(isAlive()){
+            out <<"Alive";
+        } else {
+            out << "Eaten by " << getIdKiller();
+        }
     return out;
 }
 
