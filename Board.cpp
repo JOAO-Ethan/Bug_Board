@@ -103,29 +103,39 @@ void Board::tap() {
 }
 
 void Board::displayLifeHistories() {
+    printLifeHistories(cout);
+}
+
+void Board::exit() {
+    ofstream file;
+    file.open("bugs_life_history_date_time.out");
+    printLifeHistories(file);
+}
+
+ostream &Board::printLifeHistories(ostream &out) const {
     for(auto p_bug : bug_vector){
-        cout << p_bug->getId() << ' ';
+        out << p_bug->getId() << ' ';
         switch (p_bug->getType()) {
             case 'C' :
-                cout << "Crawler" ;
+                out << "Crawler" ;
                 break;
             case 'H':
-                cout << "Hopper" ;
+                out << "Hopper" ;
                 break;
             default:
-                cout << "Bug";
+                out << "Bug";
                 break;
         }
-        cout << ' ' << "Path:" << ' ';
+        out << ' ' << "Path:" << ' ';
         for(auto position : p_bug->getPath()){
-            cout << '(' << position.first << ',' << position.second << ')';
+            out << '(' << position.first << ',' << position.second << ')';
             if(position != p_bug->getPosition()){
-                cout << ',';
+                out << ',';
             }
         }
-        cout << ' ' << (p_bug->isAlive()?"Alive" : "Eaten") << endl;
+        out << ' ' << (p_bug->isAlive()?"Alive" : "Eaten") << endl;
     }
-
+    return out;
 }
 
 

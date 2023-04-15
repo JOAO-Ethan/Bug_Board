@@ -18,6 +18,8 @@ private:
     Bug* parseLine(const string &line);
 
     static void getData(stringstream &strm, string &var);
+
+    ostream& printLifeHistories(ostream&out) const;
 public:
     Board();
 
@@ -40,6 +42,8 @@ public:
     void tap();
 
     void displayLifeHistories();
+
+    void exit();
 };
 
 
