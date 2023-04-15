@@ -9,17 +9,21 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <map>
 #include "Bug.h"
 using namespace std;
 class Board {
 private:
     vector<Bug*> bug_vector;
+    map<pair<int,int>,vector<Bug*>> cells;
 
     Bug* parseLine(const string &line);
 
     static void getData(stringstream &strm, string &var);
 
     ostream& printLifeHistories(ostream&out) const;
+
+    void updateCell(Bug* bug);
 public:
     Board();
 
@@ -44,6 +48,8 @@ public:
     void displayLifeHistories();
 
     void exit();
+
+    void displayAllCells();
 };
 
 

@@ -53,6 +53,7 @@ void Board::load(const string& fname) {
         string line;
         while (getline(fin, line)) {
             bug_vector.push_back(parseLine(line));
+            updateCell(bug_vector.back());
         }
     }
 }
@@ -97,8 +98,10 @@ void Board::findBug(int id) {
 }
 
 void Board::tap() {
+    cells.clear();
     for(auto p_bug : bug_vector){
         p_bug->move();
+        updateCell(p_bug);
     }
 }
 
@@ -116,17 +119,7 @@ void Board::exit() {
 ostream &Board::printLifeHistories(ostream &out) const {
     for(auto p_bug : bug_vector){
         out << p_bug->getId() << ' ';
-        switch (p_bug->getType()) {
-            case 'C' :
-                out << "Crawler" ;
-                break;
-            case 'H':
-                out << "Hopper" ;
-                break;
-            default:
-                out << "Bug";
-                break;
-        }
+        out << Bug::getFullType(p_bug->getType());
         out << ' ' << "Path:" << ' ';
         for(auto position : p_bug->getPath()){
             out << '(' << position.first << ',' << position.second << ')';
@@ -137,6 +130,34 @@ ostream &Board::printLifeHistories(ostream &out) const {
         out << ' ' << (p_bug->isAlive()?"Alive" : "Eaten") << endl;
     }
     return out;
+}
+
+void Board::updateCell(Bug *p_bug) {
+    if(auto pos = cells.find(p_bug->getPosition()); pos != cells.end()){
+        pos->second.push_back(p_bug);
+    } else {
+        cells[p_bug->getPosition()] = {p_bug};
+    }
+}
+
+void Board::displayAllCells() {
+    for(int i = 0; i < 10; i++){
+        for(int j = 0; j < 10; j++){
+            cout << '(' << i << ',' << j << "): ";
+            if(auto cell = cells.find({i,j}); cell != cells.end()){
+                for(auto p_bug : cell->second){
+                    cout << Bug::getFullType(p_bug->getType());
+                    cout << " " << p_bug->getId();
+                    if(p_bug != cell->second.back()){
+                        cout << " ,";
+                    }
+                }
+            } else {
+                cout << "empty";
+            }
+            cout << endl;
+        }
+    }
 }
 
 

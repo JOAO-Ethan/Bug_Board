@@ -48,6 +48,8 @@ public:
     list<pair<int, int>> getPath() const;
 
     friend ostream &operator<<(ostream &out, const Bug &bug);
+
+    static string getFullType(char type);
 };
 
 

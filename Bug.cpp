@@ -105,6 +105,17 @@ ostream &operator<<(ostream &out, const Bug &bug) {
     return bug.print(out);
 }
 
+string Bug::getFullType(char type) {
+    switch (type) {
+        case 'C':
+            return "Crawler";
+        case 'H':
+            return "Hopper";
+        default:
+            return "Not a bug";
+    }
+}
+
 ostream &operator << ( ostream& out, Direction d){
     switch (d) {
         case North:
