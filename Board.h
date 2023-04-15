@@ -38,6 +38,8 @@ public:
     void findBug(int id);
 
     void tap();
+
+    void displayLifeHistories();
 };
 
 

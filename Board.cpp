@@ -102,5 +102,31 @@ void Board::tap() {
     }
 }
 
+void Board::displayLifeHistories() {
+    for(auto p_bug : bug_vector){
+        cout << p_bug->getId() << ' ';
+        switch (p_bug->getType()) {
+            case 'C' :
+                cout << "Crawler" ;
+                break;
+            case 'H':
+                cout << "Hopper" ;
+                break;
+            default:
+                cout << "Bug";
+                break;
+        }
+        cout << ' ' << "Path:" << ' ';
+        for(auto position : p_bug->getPath()){
+            cout << '(' << position.first << ',' << position.second << ')';
+            if(position != p_bug->getPosition()){
+                cout << ',';
+            }
+        }
+        cout << ' ' << (p_bug->isAlive()?"Alive" : "Eaten") << endl;
+    }
+
+}
+
 
 

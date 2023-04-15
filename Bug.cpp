@@ -10,6 +10,7 @@ Bug::Bug(int id, pair<int,int> position, Direction direction, int size){
     this->direction = direction;
     alive = true;
     this->size = size;
+    path.push_back(position);
 }
 Bug::Bug(int id, int x, int y, Direction direction, int size){
     this->id = id;
@@ -17,6 +18,8 @@ Bug::Bug(int id, int x, int y, Direction direction, int size){
     this->direction = direction;
     alive = true;
     this->size = size;
+    path.push_back(position);
+
 }
 Bug::Bug(){
     id = 0;
@@ -24,6 +27,8 @@ Bug::Bug(){
     direction = South;
     alive = true;
     size = 1;
+    path.push_back(position);
+
 }
 
 bool Bug::isWayBlocked() {
@@ -93,6 +98,7 @@ bool Bug::isAlive() const {
 
 list<pair<int, int>> Bug::getPath() const {
     return path;
+
 }
 
 ostream &operator<<(ostream &out, const Bug &bug) {
