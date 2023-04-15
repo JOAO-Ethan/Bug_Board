@@ -110,6 +110,7 @@ void Board::exit() {
     ofstream file;
     file.open("bugs_life_history_date_time.out");
     printLifeHistories(file);
+    file.close();
 }
 
 ostream &Board::printLifeHistories(ostream &out) const {
