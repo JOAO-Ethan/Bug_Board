@@ -18,6 +18,9 @@ Board::Board(const Board &source) {
         } else if (p_bug->getType() == 'H') {
             auto *p_hop = (Hopper *) p_bug;
             bug_vector.push_back(new Hopper(*p_hop));
+        } else if(p_bug->getType() == 'B'){
+            auto *p_bish = (BishopBug *) p_bug;
+            bug_vector.push_back(new BishopBug(*p_bish));
         }
     }
 }
