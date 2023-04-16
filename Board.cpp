@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include <thread>
 #include "Board.h"
 #include "Crawler.h"
 #include "Hopper.h"
@@ -198,6 +199,17 @@ bool Board::gameOver() {
     return count_if(bug_vector.begin(), bug_vector.end(), [](Bug* p_bug){
         return p_bug->isAlive();
     }) == 1;
+}
+
+void Board::run(){
+    while(!gameOver()){
+        displayBugs();
+        cout << endl;
+        tap();
+        std::this_thread::sleep_for(1s);
+    }
+    displayBugs();
+    exit();
 }
 
 

@@ -52,6 +52,8 @@ public:
     bool gameOver();
 
     void displayAllCells();
+
+    void run();
 };
 
 
