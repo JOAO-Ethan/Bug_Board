@@ -8,6 +8,7 @@
 #include "Board.h"
 #include "Crawler.h"
 #include "Hopper.h"
+#include "BishopBug.h"
 
 Board::Board(const Board &source) {
     for (auto p_bug: source.bug_vector) {
@@ -27,6 +28,8 @@ Board::~Board() {
             delete (Crawler *) p_bug;
         } else if (p_bug->getType() == 'H') {
             delete (Hopper *) p_bug;
+        } else if(p_bug->getType() == 'B'){
+            delete (BishopBug *) p_bug;
         }
     }
 }
@@ -39,6 +42,10 @@ Board &Board::operator=(const Board &otherBoard) {
         } else if (p_bug->getType() == 'H') {
             auto *p_hop = (Hopper *) p_bug;
             bug_vector.push_back(new Hopper(*p_hop));
+        }
+        else if(p_bug->getType() == 'B'){
+            auto *p_bish = (BishopBug *) p_bug;
+            bug_vector.push_back(new BishopBug(*p_bish));
         }
     }
     return *this;
@@ -74,6 +81,9 @@ Bug *Board::parseLine(const string &line) {
         return new Hopper(stoi(id), stoi(x), stoi(y), Direction(stoi(direction)), stoi(size), stoi(hope));
     } else if (type == "C") {
         return new Crawler(stoi(id), stoi(x), stoi(y), Direction(stoi(direction)), stoi(size));
+    }
+    else if(type == "B"){
+        return new BishopBug(stoi(id), stoi(x), stoi(y), Direction(stoi(direction)), stoi(size));
     }
     return nullptr;
 }
@@ -118,7 +128,7 @@ void Board::tap() {
                     p_bug->eat(*current);
                     current = p_bug;
                 } else {
-                    if (rand() % 1 == 0) {
+                    if ((rand() % 2+1)  == 1) {
                         current->eat(*p_bug);
                     } else {
                         p_bug->eat(*current);
