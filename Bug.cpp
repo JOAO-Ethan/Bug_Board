@@ -5,6 +5,7 @@
 #include "Bug.h"
 
 Bug::Bug(int id, pair<int,int> position, Direction direction, int size){
+    srand(time(nullptr));
     this->id = id;
     this->position = position;
     this->direction = direction;
@@ -13,6 +14,7 @@ Bug::Bug(int id, pair<int,int> position, Direction direction, int size){
     path.push_back(position);
 }
 Bug::Bug(int id, int x, int y, Direction direction, int size){
+    srand(time(nullptr));
     this->id = id;
     position = {x,y};
     this->direction = direction;
@@ -22,6 +24,7 @@ Bug::Bug(int id, int x, int y, Direction direction, int size){
 
 }
 Bug::Bug(){
+    srand(time(nullptr));
     id = 0;
     position = {0,0};
     direction = South;
