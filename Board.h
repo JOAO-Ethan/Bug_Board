@@ -12,36 +12,38 @@
 #include <map>
 #include <SFML/Graphics.hpp>
 #include "Bug.h"
-using namespace std;
+
 class Board {
 private:
-    vector<Bug*> bug_vector;
-    map<pair<int,int>,vector<Bug*>> cells;
+    std::vector<Bug *> bug_vector;
+    std::map<std::pair<int, int>, std::vector<Bug *>> cells;
 
-    Bug* parseLine(const string &line);
+    Bug *parseLine(const std::string &line);
 
-    static void getData(stringstream &strm, string &var);
+    static void getData(std::stringstream &strm, std::string &var);
 
-    ostream& printLifeHistories(ostream&out) const;
+    std::ostream &printLifeHistories(std::ostream &out) const;
 
-    void updateCell(Bug* bug);
+    void updateCell(Bug *bug);
 
     void drawBugs(sf::RenderWindow &window, int windowSize, int nbCells);
-    void createGrid(vector<sf::RectangleShape> &board, int windowSize, int nbCells);
+
+    void createGrid(std::vector<sf::RectangleShape> &board, int windowSize, int nbCells);
+
 public:
     Board();
 
     //Copy constructor
-    Board(const Board& source);
+    Board(const Board &source);
 
     //Destructor
     ~Board();
 
 
     //Assignment operator
-    Board& operator= (const Board& otherBoard);
+    Board &operator=(const Board &otherBoard);
 
-    void load(const string& fname);
+    void load(const std::string &fname);
 
     void displayBugs() const;
 

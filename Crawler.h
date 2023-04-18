@@ -1,5 +1,5 @@
 //
-// Created by ubuntu on 14/03/23.
+// Created by Ethan JOAO on 14/03/23.
 //
 
 #ifndef JOAO_ETHAN_CA3_CRAWLER_H
@@ -12,13 +12,18 @@
 class Crawler : public Bug {
 public:
     Crawler();
-    Crawler(int id, pair<int,int> position, Direction direction, int size);
+
+    Crawler(int id, std::pair<int, int> position, Direction direction, int size);
+
     Crawler(int id, int x, int y, Direction direction, int size);
 
     Crawler(const Crawler &crawler);
+
     void move() override;
+
     const char getType() override;
-    ostream& print(ostream&out) const override;
+
+    std::ostream &print(std::ostream &out) const override;
 };
 
 

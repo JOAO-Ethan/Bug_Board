@@ -1,10 +1,12 @@
 //
-// Created by ubuntu on 14/03/23.
+// Created by Ethan JOAO on 14/03/23.
 //
 
 #include "Bug.h"
 
-Bug::Bug(int id, pair<int,int> position, Direction direction, int size){
+using namespace std;
+
+Bug::Bug(int id, pair<int, int> position, Direction direction, int size) {
     srand(time(nullptr));
     this->id = id;
     this->position = position;
@@ -13,20 +15,22 @@ Bug::Bug(int id, pair<int,int> position, Direction direction, int size){
     this->size = size;
     path.push_back(position);
 }
-Bug::Bug(int id, int x, int y, Direction direction, int size){
+
+Bug::Bug(int id, int x, int y, Direction direction, int size) {
     srand(time(nullptr));
     this->id = id;
-    position = {x,y};
+    position = {x, y};
     this->direction = direction;
     alive = true;
     this->size = size;
     path.push_back(position);
 
 }
-Bug::Bug(){
+
+Bug::Bug() {
     srand(time(nullptr));
     id = 0;
-    position = {0,0};
+    position = {0, 0};
     direction = South;
     alive = true;
     size = 1;
@@ -131,7 +135,7 @@ int Bug::getIdKiller() const {
     return idKiller;
 }
 
-ostream &operator << ( ostream& out, Direction d){
+ostream &operator<<(ostream &out, Direction d) {
     switch (d) {
         case North:
             out << "North";

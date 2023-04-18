@@ -12,7 +12,7 @@ class BishopBug : public Bug {
 public:
     BishopBug();
 
-    BishopBug(int id, pair<int, int> position, Direction direction, int size);
+    BishopBug(int id, std::pair<int, int> position, Direction direction, int size);
 
     BishopBug(int id, int x, int y, Direction direction, int size);
 
@@ -22,7 +22,7 @@ public:
 
     const char getType() override;
 
-    ostream &print(ostream &out) const override;
+    std::ostream &print(std::ostream &out) const override;
 
 };
 

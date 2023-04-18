@@ -6,6 +6,8 @@
 #include <iomanip>
 #include "BishopBug.h"
 
+using namespace std;
+
 BishopBug::BishopBug() : Bug() {
 
 }
@@ -44,14 +46,14 @@ void BishopBug::move() {
                 setY(getY() + 1);
                 break;
         }
-        if(i > 0){ continue;}
+        if (i > 0) { continue; }
         if (getDirection() == East || getDirection() == West) {
             do {
-                if ((rand() % 2+1)  == 1) { setDirection(North); } else { setDirection(South); }
+                if ((rand() % 2 + 1) == 1) { setDirection(North); } else { setDirection(South); }
             } while (isWayBlocked());
         } else {
             do {
-                if ((rand() % 2+1)  == 1) { setDirection(East); } else { setDirection(West); }
+                if ((rand() % 2 + 1) == 1) { setDirection(East); } else { setDirection(West); }
             } while (isWayBlocked());
         }
     }

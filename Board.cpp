@@ -223,9 +223,9 @@ void Board::run() {
     sf::RenderWindow window(sf::VideoMode(windowSize, windowSize), "SFML works!");
     int nbCells = 10;
     sf::Font font;
-    if (!font.loadFromFile("../Ubuntu-R.ttf")){{cout << "ui" << endl;}};
+    if (!font.loadFromFile("../Ubuntu-R.ttf")) {{ cout << "ui" << endl; }};
     vector<sf::RectangleShape> board;
-    createGrid(board,windowSize, nbCells);
+    createGrid(board, windowSize, nbCells);
     while (!gameOver() && window.isOpen()) {
         sf::Event event{};
         while (window.pollEvent(event)) {
@@ -241,19 +241,20 @@ void Board::run() {
         for (auto rect: board) {
             window.draw(rect);
         }
-        drawBugs(window,windowSize, nbCells);
+        drawBugs(window, windowSize, nbCells);
         window.display();
     }
     displayBugs();
     stringstream sstrm;
-    auto winner = find_if(bug_vector.begin(), bug_vector.end(), [](Bug *p_bug){ return p_bug->isAlive();
+    auto winner = find_if(bug_vector.begin(), bug_vector.end(), [](Bug *p_bug) {
+        return p_bug->isAlive();
     });
     sstrm << (*winner)->getId() << " Won !";
     sf::Text win;
     win.setString(sstrm.str());
     win.setFont(font);
     win.setCharacterSize(24);
-    win.setPosition(windowSize/3, windowSize/2);
+    win.setPosition(windowSize / 3, windowSize / 2);
     win.setStyle(sf::Text::Bold);
     win.setFillColor(sf::Color::Black);
     window.draw(win);

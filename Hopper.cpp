@@ -1,10 +1,12 @@
 //
-// Created by ubuntu on 22/03/23.
+// Created by Ethan JOAO on 22/03/23.
 //
 
 #include "Hopper.h"
 #include <cstdlib>
 #include <iomanip>
+
+using namespace std;
 
 void Hopper::move() {
     while (isWayBlocked()) {
@@ -46,16 +48,18 @@ int Hopper::gethopLength() {
     return hopLength;
 }
 
-Hopper::Hopper(int id, pair<int, int> position, Direction direction, int size, int hopLength) : Bug(id,position,direction, size){
+Hopper::Hopper(int id, pair<int, int> position, Direction direction, int size, int hopLength) : Bug(id, position,
+                                                                                                    direction, size) {
     this->hopLength = hopLength;
 }
 
-Hopper::Hopper(int id, int x, int y, Direction direction, int size, int hopLength) : Bug(id,x,y,direction, size) {
+Hopper::Hopper(int id, int x, int y, Direction direction, int size, int hopLength) : Bug(id, x, y, direction, size) {
     this->hopLength = hopLength;
 
 }
 
-Hopper::Hopper(const Hopper &hopper) : Bug(hopper.getId(), hopper.getPosition(), hopper.getDirection(), hopper.getSize()) {
+Hopper::Hopper(const Hopper &hopper) : Bug(hopper.getId(), hopper.getPosition(), hopper.getDirection(),
+                                           hopper.getSize()) {
     this->hopLength = hopper.hopLength;
 }
 
@@ -65,19 +69,19 @@ const char Hopper::getType() {
 
 ostream &Hopper::print(ostream &out) const {
     stringstream ss;
-    ss <<  '(' << getX() << ',' << getY() <<")";
+    ss << '(' << getX() << ',' << getY() << ")";
     out << left << setw(4) << getId()
         << setw(8) << "Hopper"
         << setw(6) << ss.str()
-        <<setw(4) << getSize()
-        <<setw(6) <<  getDirection()
-        << setw(2) <<  hopLength
-        <<setw(5);
-        if(isAlive()){
-            out <<"Alive";
-        } else {
-            out << "Eaten by " << getIdKiller();
-        }
+        << setw(4) << getSize()
+        << setw(6) << getDirection()
+        << setw(2) << hopLength
+        << setw(5);
+    if (isAlive()) {
+        out << "Alive";
+    } else {
+        out << "Eaten by " << getIdKiller();
+    }
     return out;
 }
 

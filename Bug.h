@@ -5,53 +5,76 @@
 #include <list>
 #include <ostream>
 
-using namespace std;
 #ifndef JOAO_ETHAN_CA3_BUG_H
 #define JOAO_ETHAN_CA3_BUG_H
-enum Direction : int {North = 1, East = 2, South = 3, West = 4};
-ostream &operator << ( ostream& out, Direction d);
+enum Direction : int {
+    North = 1, East = 2, South = 3, West = 4
+};
+
+std::ostream &operator<<(std::ostream &out, Direction d);
 
 class Bug {
 private:
-    int id,size, idKiller;
-    pair<int,int> position;
+    int id, size, idKiller;
+    std::pair<int, int> position;
     Direction direction;
     bool alive;
-    list<pair<int,int>> path;
+    std::list<std::pair<int, int>> path;
 
 protected:
     //setters
     void setDirection(Direction dir);
-    void setPosition(pair<int, int> pos);
+
+    void setPosition(std::pair<int, int> pos);
+
     void setX(int x);
+
     void setY(int y);
+
     void kill();
-    void addPath(pair<int, int> pos);
+
+    void addPath(std::pair<int, int> pos);
+
 public:
     //constructors
-    Bug(int id, pair<int,int> position, Direction direction, int size);
+    Bug(int id, std::pair<int, int> position, Direction direction, int size);
+
     Bug(int id, int x, int y, Direction direction, int size);
+
     Bug();
 
-    virtual void move() =0;
-    virtual const char getType() =0;
-    virtual ostream& print(ostream&out) const =0 ;
+    virtual void move() = 0;
+
+    virtual const char getType() = 0;
+
+    virtual std::ostream &print(std::ostream &out) const = 0;
+
     //getters
     bool isWayBlocked();
+
     int getId() const;
+
     int getSize() const;
-    pair<int, int> getPosition() const;
+
+    std::pair<int, int> getPosition() const;
+
     int getX() const;
+
     int getY() const;
+
     Direction getDirection() const;
+
     bool isAlive() const;
+
     int getIdKiller() const;
-    list<pair<int, int>> getPath() const;
 
-    friend ostream &operator<<(ostream &out, const Bug &bug);
+    std::list<std::pair<int, int>> getPath() const;
 
-    static string getFullType(char type);
-    void eat(Bug& other);
+    friend std::ostream &operator<<(std::ostream &out, const Bug &bug);
+
+    static std::string getFullType(char type);
+
+    void eat(Bug &other);
 };
 
 

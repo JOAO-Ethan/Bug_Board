@@ -7,6 +7,8 @@
 
 #include <cstdlib>
 
+using namespace std;
+
 void Crawler::move() {
     while (isWayBlocked()) {
         setDirection(Direction(rand() % 4 + 1));
