@@ -10,6 +10,7 @@
 #include <string>
 #include <sstream>
 #include <map>
+#include <SFML/Graphics.hpp>
 #include "Bug.h"
 using namespace std;
 class Board {
@@ -24,6 +25,9 @@ private:
     ostream& printLifeHistories(ostream&out) const;
 
     void updateCell(Bug* bug);
+
+    void drawBugs(sf::RenderWindow &window, int windowSize, int nbCells);
+    void createGrid(vector<sf::RectangleShape> &board, int windowSize, int nbCells);
 public:
     Board();
 

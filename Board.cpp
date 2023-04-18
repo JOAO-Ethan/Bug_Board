@@ -5,12 +5,16 @@
 #include <fstream>
 #include <algorithm>
 #include <thread>
+
 #include "Board.h"
 #include "Crawler.h"
 #include "Hopper.h"
 #include "BishopBug.h"
 
+using namespace std;
+
 Board::Board(const Board &source) {
+    srand(time(nullptr));
     for (auto p_bug: source.bug_vector) {
         if (p_bug->getType() == 'C') {
             auto *p_crawl = (Crawler *) p_bug;
@@ -18,7 +22,7 @@ Board::Board(const Board &source) {
         } else if (p_bug->getType() == 'H') {
             auto *p_hop = (Hopper *) p_bug;
             bug_vector.push_back(new Hopper(*p_hop));
-        } else if(p_bug->getType() == 'B'){
+        } else if (p_bug->getType() == 'B') {
             auto *p_bish = (BishopBug *) p_bug;
             bug_vector.push_back(new BishopBug(*p_bish));
         }
@@ -31,13 +35,14 @@ Board::~Board() {
             delete (Crawler *) p_bug;
         } else if (p_bug->getType() == 'H') {
             delete (Hopper *) p_bug;
-        } else if(p_bug->getType() == 'B'){
+        } else if (p_bug->getType() == 'B') {
             delete (BishopBug *) p_bug;
         }
     }
 }
 
 Board &Board::operator=(const Board &otherBoard) {
+    srand(time(nullptr));
     for (auto p_bug: otherBoard.bug_vector) {
         if (p_bug->getType() == 'C') {
             auto *p_crawl = (Crawler *) p_bug;
@@ -45,8 +50,7 @@ Board &Board::operator=(const Board &otherBoard) {
         } else if (p_bug->getType() == 'H') {
             auto *p_hop = (Hopper *) p_bug;
             bug_vector.push_back(new Hopper(*p_hop));
-        }
-        else if(p_bug->getType() == 'B'){
+        } else if (p_bug->getType() == 'B') {
             auto *p_bish = (BishopBug *) p_bug;
             bug_vector.push_back(new BishopBug(*p_bish));
         }
@@ -55,6 +59,7 @@ Board &Board::operator=(const Board &otherBoard) {
 }
 
 Board::Board() {
+    srand(time(nullptr));
     load("../bugs.txt");
 };
 
@@ -84,8 +89,7 @@ Bug *Board::parseLine(const string &line) {
         return new Hopper(stoi(id), stoi(x), stoi(y), Direction(stoi(direction)), stoi(size), stoi(hope));
     } else if (type == "C") {
         return new Crawler(stoi(id), stoi(x), stoi(y), Direction(stoi(direction)), stoi(size));
-    }
-    else if(type == "B"){
+    } else if (type == "B") {
         return new BishopBug(stoi(id), stoi(x), stoi(y), Direction(stoi(direction)), stoi(size));
     }
     return nullptr;
@@ -131,7 +135,7 @@ void Board::tap() {
                     p_bug->eat(*current);
                     current = p_bug;
                 } else {
-                    if ((rand() % 2+1)  == 1) {
+                    if ((rand() % 2 + 1) == 1) {
                         current->eat(*p_bug);
                     } else {
                         p_bug->eat(*current);
@@ -166,7 +170,7 @@ ostream &Board::printLifeHistories(ostream &out) const {
             if (&position != &path.back()) {
                 out << ',';
             }
-            if(&position == &path.back()){
+            if (&position == &path.back()) {
             }
         }
         out << ' ';
@@ -209,21 +213,101 @@ void Board::displayAllCells() {
 }
 
 bool Board::gameOver() {
-    return count_if(bug_vector.begin(), bug_vector.end(), [](Bug* p_bug){
+    return count_if(bug_vector.begin(), bug_vector.end(), [](Bug *p_bug) {
         return p_bug->isAlive();
     }) == 1;
 }
 
-void Board::run(){
-    while(!gameOver()){
+void Board::run() {
+    int windowSize = 500;
+    sf::RenderWindow window(sf::VideoMode(windowSize, windowSize), "SFML works!");
+    int nbCells = 10;
+    sf::Font font;
+    if (!font.loadFromFile("../Ubuntu-R.ttf")){{cout << "ui" << endl;}};
+    vector<sf::RectangleShape> board;
+    createGrid(board,windowSize, nbCells);
+    while (!gameOver() && window.isOpen()) {
+        sf::Event event{};
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                window.close();
+            }
+        }
         displayBugs();
         cout << endl;
         tap();
         std::this_thread::sleep_for(1s);
+        window.clear();
+        for (auto rect: board) {
+            window.draw(rect);
+        }
+        drawBugs(window,windowSize, nbCells);
+        window.display();
     }
     displayBugs();
+    stringstream sstrm;
+    auto winner = find_if(bug_vector.begin(), bug_vector.end(), [](Bug *p_bug){ return p_bug->isAlive();
+    });
+    sstrm << (*winner)->getId() << " Won !";
+    sf::Text win;
+    win.setString(sstrm.str());
+    win.setFont(font);
+    win.setCharacterSize(24);
+    win.setPosition(windowSize/3, windowSize/2);
+    win.setStyle(sf::Text::Bold);
+    win.setFillColor(sf::Color::Black);
+    window.draw(win);
+    window.display();
+    std::this_thread::sleep_for(2s);
     exit();
+    window.close();
+
 }
+
+void Board::drawBugs(sf::RenderWindow &window, int windowSize, int nbCells) {
+    for (auto p_bug: bug_vector) {
+        if (p_bug->isAlive()) {
+            sf::CircleShape bugSprite;
+            if (p_bug->getSize() < (windowSize / nbCells) - 1) {
+                bugSprite.setRadius(p_bug->getSize());
+            } else {
+                bugSprite.setRadius((windowSize / nbCells) - 1);
+            }
+            bugSprite.setPosition(p_bug->getX() * (windowSize / nbCells) - 1,
+                                  p_bug->getY() * (windowSize / nbCells) - 1);
+            switch (p_bug->getType()) {
+                case ('C'):
+                    bugSprite.setFillColor(sf::Color::Cyan);
+                    break;
+                case ('H'):
+                    bugSprite.setFillColor(sf::Color::Green);
+                    break;
+                case ('B'):
+                    bugSprite.setFillColor(sf::Color::Magenta);
+                    break;
+                default:
+                    bugSprite.setFillColor(sf::Color::Yellow);
+            }
+            window.draw(bugSprite);
+        }
+    }
+}
+
+void Board::createGrid(vector<sf::RectangleShape> &board, int windowSize, int nbCells) {
+    for (int x = 0; x < nbCells; x++) {
+        for (int y = 0; y < nbCells; y++) {
+            sf::RectangleShape rect(sf::Vector2f(windowSize / nbCells, windowSize / nbCells));
+            rect.setPosition(x * (windowSize / nbCells), y * (windowSize / nbCells));
+            rect.setFillColor(sf::Color::White);
+            rect.setOutlineThickness(1.f);
+            rect.setOutlineColor(sf::Color::Black);
+            board.push_back(rect);
+
+        }
+    }
+
+}
+
 
 
 
