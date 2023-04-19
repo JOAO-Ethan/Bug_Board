@@ -29,6 +29,8 @@ protected:
 
     void setX(int x);
 
+    void setSize(int size);
+
     void setY(int y);
 
     void kill();

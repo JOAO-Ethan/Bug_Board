@@ -135,6 +135,10 @@ int Bug::getIdKiller() const {
     return idKiller;
 }
 
+void Bug::setSize(int size) {
+    this->size = size;
+}
+
 ostream &operator<<(ostream &out, Direction d) {
     switch (d) {
         case North:
