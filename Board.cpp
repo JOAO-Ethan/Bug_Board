@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <thread>
 #include <chrono>
+#include <SFML/Audio.hpp>
 
 #include "Board.h"
 #include "Crawler.h"
@@ -215,7 +216,8 @@ void Board::run() {
     window.setFramerateLimit(10);
     int nbCells = 10;
     sf::Font font;
-    if (!font.loadFromFile("../Ubuntu-R.ttf")) {{ cout << "ui" << endl; }};
+    if (!font.loadFromFile("../assets/Ubuntu-R.ttf")) {{ cout << "Error while loading font" << endl; }};
+
     vector<sf::RectangleShape> board;
     createGrid(board, windowSize, nbCells);
     SuperBug *player = (SuperBug *) (*find_if(bug_vector.begin(), bug_vector.end(),
@@ -223,7 +225,7 @@ void Board::run() {
     auto beginning = chrono::high_resolution_clock::now();
     while (!gameOver() && window.isOpen()) {
         sf::Event event{};
-        if (player->isAlive()) {
+                if (player->isAlive()) {
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) movePlayer(West, player);
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) movePlayer(East, player);
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) movePlayer(North, player);
@@ -273,35 +275,43 @@ void Board::run() {
 }
 
 void Board::drawBugs(sf::RenderWindow &window, sf::Font &font, int windowSize, int nbCells) {
+    sf::Texture bugTexture;
+    if (!bugTexture.loadFromFile("../assets/bug.png")) {
+        cout << "Error while loading texture" << endl;
+        return;
+    }
+    float maxSize = (windowSize * 1.f / nbCells) / 2 - 2;
     for (auto p_bug: bug_vector) {
         if (p_bug->isAlive()) {
-            float posX = p_bug->getX() * (windowSize*1.f / nbCells) - 1;
-            float posY = p_bug->getY() * (windowSize*1.f / nbCells) - 1;
-            int maxSize = (windowSize*1.f / nbCells)/2 - 2;
-            sf::CircleShape bugSprite;
+            float posX = p_bug->getX() * (windowSize * 1.f / nbCells) - 1;
+            float posY = p_bug->getY() * (windowSize * 1.f / nbCells) - 1;
+            sf::Sprite bugSprite;
+            bugSprite.setTexture(bugTexture);
             bugSprite.setPosition(posX, posY);
             switch (p_bug->getType()) {
                 case ('C'):
-                    bugSprite.setFillColor(sf::Color::Cyan);
+                    bugSprite.setColor(sf::Color::Cyan);
                     break;
                 case ('H'):
-                    bugSprite.setFillColor(sf::Color::Green);
+                    bugSprite.setColor(sf::Color::Green);
                     break;
                 case ('B'):
-                    bugSprite.setFillColor(sf::Color::Magenta);
+                    bugSprite.setColor(sf::Color::Magenta);
                     break;
                 default:
-                    bugSprite.setFillColor(sf::Color::Yellow);
+                    bugSprite.setColor(sf::Color::Yellow);
             }
+
             if (p_bug->getSize() < maxSize) {
-                bugSprite.setRadius(p_bug->getSize());
+                float scale = 1.f / (maxSize * 1.4 - p_bug->getSize());
+                bugSprite.setScale(scale, scale);
                 window.draw(bugSprite);
             } else {
-                bugSprite.setRadius(maxSize);
+                bugSprite.setScale(0.1, 0.1);
                 sf::Text size;
                 size.setFont(font);
-                size.setCharacterSize(10);
-                size.setPosition(posX+maxSize,posY+maxSize);
+                size.setCharacterSize(15);
+                size.setPosition(posX + maxSize, posY + maxSize);
                 size.setFillColor(sf::Color::Black);
                 size.setString(to_string(p_bug->getSize()));
                 window.draw(bugSprite);
