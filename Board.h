@@ -48,6 +48,7 @@ public:
     Board &operator=(const Board &otherBoard);
 
     void load(const std::string &fname);
+    void clear();
 
     void displayBugs() const;
 

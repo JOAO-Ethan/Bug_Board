@@ -36,17 +36,7 @@ Board::Board(const Board &source) {
 }
 
 Board::~Board() {
-    for (auto p_bug: bug_vector) {
-        if (p_bug->getType() == 'C') {
-            delete (Crawler *) p_bug;
-        } else if (p_bug->getType() == 'H') {
-            delete (Hopper *) p_bug;
-        } else if (p_bug->getType() == 'B') {
-            delete (BishopBug *) p_bug;
-        } else if (p_bug->getType() == 'S') {
-            delete (SuperBug *) p_bug;
-        }
-    }
+    clear();
 }
 
 Board &Board::operator=(const Board &otherBoard) {
@@ -376,6 +366,21 @@ void Board::fight(const pair<int, int> &position) {
             }
         }
     }
+}
+
+void Board::clear() {
+    for (auto p_bug: bug_vector) {
+        if (p_bug->getType() == 'C') {
+            delete (Crawler *) p_bug;
+        } else if (p_bug->getType() == 'H') {
+            delete (Hopper *) p_bug;
+        } else if (p_bug->getType() == 'B') {
+            delete (BishopBug *) p_bug;
+        } else if (p_bug->getType() == 'S') {
+            delete (SuperBug *) p_bug;
+        }
+    }
+    bug_vector.erase(bug_vector.begin(), bug_vector.end());
 }
 
 

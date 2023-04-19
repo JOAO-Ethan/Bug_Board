@@ -18,7 +18,8 @@ int main() {
         cout << choice << endl;
         switch (choice) {
             case 1:
-                board.load("./bugs.txt");
+                board.clear();
+                board.load("../bugs.txt");
                 break;
             case 2:
                 board.displayBugs();
@@ -57,7 +58,7 @@ int main() {
 }
 
 int displayMenu() {
-    cout << left << "1. Initialize Bug Board (load data from file) (already done once)" << endl;
+    cout << left << "1. Reload Bug Board (load data from file)" << endl;
     cout << left << "2. Display all Bugs" << endl;
     cout << left << "3. Find a Bug (given an id)" << endl;
     cout << left << "4. Tap the Bug Board (causes move all, then fight/eat)" << endl;
