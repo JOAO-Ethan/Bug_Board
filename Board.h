@@ -12,6 +12,7 @@
 #include <map>
 #include <SFML/Graphics.hpp>
 #include "Bug.h"
+#include "SuperBug.h"
 
 class Board {
 private:
@@ -26,10 +27,13 @@ private:
 
     void updateCell(Bug *bug);
 
-    void drawBugs(sf::RenderWindow &window, int windowSize, int nbCells);
+    void drawBugs(sf::RenderWindow &window, sf::Font &font, int windowSize, int nbCells);
 
     void createGrid(std::vector<sf::RectangleShape> &board, int windowSize, int nbCells);
 
+    void movePlayer(Direction direction, SuperBug* player);
+
+    void fight(const std::pair<int, int> &position);
 public:
     Board();
 

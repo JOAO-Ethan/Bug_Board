@@ -5,11 +5,13 @@
 #include <fstream>
 #include <algorithm>
 #include <thread>
+#include <chrono>
 
 #include "Board.h"
 #include "Crawler.h"
 #include "Hopper.h"
 #include "BishopBug.h"
+#include "SuperBug.h"
 
 using namespace std;
 
@@ -25,6 +27,9 @@ Board::Board(const Board &source) {
         } else if (p_bug->getType() == 'B') {
             auto *p_bish = (BishopBug *) p_bug;
             bug_vector.push_back(new BishopBug(*p_bish));
+        } else if (p_bug->getType() == 'S') {
+            auto *p_sup = (SuperBug *) p_bug;
+            bug_vector.push_back(new SuperBug(*p_sup));
         }
     }
 }
@@ -37,6 +42,8 @@ Board::~Board() {
             delete (Hopper *) p_bug;
         } else if (p_bug->getType() == 'B') {
             delete (BishopBug *) p_bug;
+        } else if (p_bug->getType() == 'S') {
+            delete (SuperBug *) p_bug;
         }
     }
 }
@@ -53,6 +60,9 @@ Board &Board::operator=(const Board &otherBoard) {
         } else if (p_bug->getType() == 'B') {
             auto *p_bish = (BishopBug *) p_bug;
             bug_vector.push_back(new BishopBug(*p_bish));
+        } else if (p_bug->getType() == 'S') {
+            auto *p_sup = (SuperBug *) p_bug;
+            bug_vector.push_back(new SuperBug(*p_sup));
         }
     }
     return *this;
@@ -91,6 +101,8 @@ Bug *Board::parseLine(const string &line) {
         return new Crawler(stoi(id), stoi(x), stoi(y), Direction(stoi(direction)), stoi(size));
     } else if (type == "B") {
         return new BishopBug(stoi(id), stoi(x), stoi(y), Direction(stoi(direction)), stoi(size));
+    } else if (type == "S") {
+        return new SuperBug(stoi(id), stoi(x), stoi(y), Direction(stoi(direction)), stoi(size));
     }
     return nullptr;
 }
@@ -118,33 +130,12 @@ void Board::tap() {
     cells.clear();
     for (auto p_bug: bug_vector) {
         if (p_bug->isAlive()) {
-            p_bug->move();
+            if (p_bug->getType() != 'S') p_bug->move();
             updateCell(p_bug);
         }
     }
     for (auto cell: cells) {
-        if (cell.second.size() > 1) {
-            auto current = cell.second.front();
-            for (auto p_bug: cell.second) {
-                if (p_bug == current) {
-                    continue;
-                }
-                if (current->getSize() > p_bug->getSize()) {
-                    current->eat(*p_bug);
-                } else if (current->getSize() < p_bug->getSize()) {
-                    p_bug->eat(*current);
-                    current = p_bug;
-                } else {
-                    if ((rand() % 2 + 1) == 1) {
-                        current->eat(*p_bug);
-                    } else {
-                        p_bug->eat(*current);
-                        current = p_bug;
-                    }
-                }
-
-            }
-        }
+        fight(cell.first);
     }
 }
 
@@ -220,28 +211,44 @@ bool Board::gameOver() {
 
 void Board::run() {
     int windowSize = 500;
-    sf::RenderWindow window(sf::VideoMode(windowSize, windowSize), "SFML works!");
+    sf::RenderWindow window(sf::VideoMode(windowSize, windowSize), "Bug Board");
+    window.setFramerateLimit(10);
     int nbCells = 10;
     sf::Font font;
     if (!font.loadFromFile("../Ubuntu-R.ttf")) {{ cout << "ui" << endl; }};
     vector<sf::RectangleShape> board;
     createGrid(board, windowSize, nbCells);
+    SuperBug *player = (SuperBug *) (*find_if(bug_vector.begin(), bug_vector.end(),
+                                              [](Bug *p_bug) { return p_bug->getType() == 'S'; }));
+    auto beginning = chrono::high_resolution_clock::now();
     while (!gameOver() && window.isOpen()) {
         sf::Event event{};
+        if (player->isAlive()) {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) movePlayer(West, player);
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) movePlayer(East, player);
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) movePlayer(North, player);
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) movePlayer(South, player);
+        }
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
+                exit();
                 window.close();
             }
         }
-        displayBugs();
-        cout << endl;
-        tap();
-        std::this_thread::sleep_for(1s);
+        auto now = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<chrono::seconds>(now - beginning);
+        if (duration.count() >= 1) {
+            tap();
+            beginning = now;
+            displayBugs();
+            cout << endl;
+        }
         window.clear();
         for (auto rect: board) {
             window.draw(rect);
+
         }
-        drawBugs(window, windowSize, nbCells);
+        drawBugs(window, font, windowSize, nbCells);
         window.display();
     }
     displayBugs();
@@ -265,17 +272,14 @@ void Board::run() {
 
 }
 
-void Board::drawBugs(sf::RenderWindow &window, int windowSize, int nbCells) {
+void Board::drawBugs(sf::RenderWindow &window, sf::Font &font, int windowSize, int nbCells) {
     for (auto p_bug: bug_vector) {
         if (p_bug->isAlive()) {
+            float posX = p_bug->getX() * (windowSize*1.f / nbCells) - 1;
+            float posY = p_bug->getY() * (windowSize*1.f / nbCells) - 1;
+            int maxSize = (windowSize*1.f / nbCells)/2 - 2;
             sf::CircleShape bugSprite;
-            if (p_bug->getSize() < (windowSize / nbCells) - 1) {
-                bugSprite.setRadius(p_bug->getSize());
-            } else {
-                bugSprite.setRadius((windowSize / nbCells) - 1);
-            }
-            bugSprite.setPosition(p_bug->getX() * (windowSize / nbCells) - 1,
-                                  p_bug->getY() * (windowSize / nbCells) - 1);
+            bugSprite.setPosition(posX, posY);
             switch (p_bug->getType()) {
                 case ('C'):
                     bugSprite.setFillColor(sf::Color::Cyan);
@@ -289,7 +293,20 @@ void Board::drawBugs(sf::RenderWindow &window, int windowSize, int nbCells) {
                 default:
                     bugSprite.setFillColor(sf::Color::Yellow);
             }
-            window.draw(bugSprite);
+            if (p_bug->getSize() < maxSize) {
+                bugSprite.setRadius(p_bug->getSize());
+                window.draw(bugSprite);
+            } else {
+                bugSprite.setRadius(maxSize);
+                sf::Text size;
+                size.setFont(font);
+                size.setCharacterSize(10);
+                size.setPosition(posX+maxSize,posY+maxSize);
+                size.setFillColor(sf::Color::Black);
+                size.setString(to_string(p_bug->getSize()));
+                window.draw(bugSprite);
+                window.draw(size);
+            }
         }
     }
 }
@@ -307,6 +324,39 @@ void Board::createGrid(vector<sf::RectangleShape> &board, int windowSize, int nb
         }
     }
 
+}
+
+void Board::movePlayer(Direction direction, SuperBug *player) {
+    player->move(direction);
+    updateCell(player);
+    cout << cells.find(player->getPosition())->second.size();
+    fight(player->getPosition());
+}
+
+void Board::fight(const pair<int, int> &position) {
+    auto cell = cells.find(position);
+    if (cell->second.size() > 1) {
+        auto current = cell->second.front();
+        for (auto p_bug: cell->second) {
+            if (p_bug == current) {
+                continue;
+            }
+            if (current->getSize() > p_bug->getSize()) {
+                current->eat(*p_bug);
+            } else if (current->getSize() < p_bug->getSize()) {
+                p_bug->eat(*current);
+                current = p_bug;
+            } else {
+                if ((rand() % 2 + 1) == 1) {
+                    current->eat(*p_bug);
+                } else {
+                    p_bug->eat(*current);
+                    current = p_bug;
+                }
+            }
+
+        }
+    }
 }
 
 
