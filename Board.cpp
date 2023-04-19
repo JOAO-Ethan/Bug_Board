@@ -216,8 +216,10 @@ void Board::run() {
     window.setFramerateLimit(10);
     int nbCells = 10;
     sf::Font font;
+    sf::Music music;
     if (!font.loadFromFile("../assets/Ubuntu-R.ttf")) {{ cout << "Error while loading font" << endl; }};
-
+    if (!music.openFromFile("../assets/music.ogg")) {{ cout << "Error while loading the music." << endl; }}
+    music.setVolume(50.f);
     vector<sf::RectangleShape> board;
     createGrid(board, windowSize, nbCells);
     SuperBug *player = (SuperBug *) (*find_if(bug_vector.begin(), bug_vector.end(),
@@ -225,7 +227,12 @@ void Board::run() {
     auto beginning = chrono::high_resolution_clock::now();
     while (!gameOver() && window.isOpen()) {
         sf::Event event{};
-                if (player->isAlive()) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
+            if (music.getStatus() != sf::SoundSource::Status::Playing) { music.play(); }
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+            if (music.getStatus() == sf::SoundSource::Status::Playing) { music.pause(); }
+        if (player->isAlive()) {
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) movePlayer(West, player);
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) movePlayer(East, player);
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) movePlayer(North, player);
@@ -234,6 +241,7 @@ void Board::run() {
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 exit();
+                music.stop();
                 window.close();
             }
         }
@@ -271,7 +279,7 @@ void Board::run() {
     std::this_thread::sleep_for(2s);
     exit();
     window.close();
-
+    music.stop();
 }
 
 void Board::drawBugs(sf::RenderWindow &window, sf::Font &font, int windowSize, int nbCells) {
@@ -347,24 +355,25 @@ void Board::fight(const pair<int, int> &position) {
     auto cell = cells.find(position);
     if (cell->second.size() > 1) {
         auto current = cell->second.front();
+        cout << current->getId() << endl;
+        while(!current->isAlive()){current++; cout << current->getId() << endl;}
         for (auto p_bug: cell->second) {
-            if (p_bug == current) {
-                continue;
-            }
-            if (current->getSize() > p_bug->getSize()) {
-                current->eat(*p_bug);
-            } else if (current->getSize() < p_bug->getSize()) {
-                p_bug->eat(*current);
-                current = p_bug;
-            } else {
-                if ((rand() % 2 + 1) == 1) {
+            if (p_bug == current) continue;
+
+            if (!p_bug->isAlive()) continue;
+                if (current->getSize() > p_bug->getSize()) {
                     current->eat(*p_bug);
-                } else {
+                } else if (current->getSize() < p_bug->getSize()) {
                     p_bug->eat(*current);
                     current = p_bug;
-                }
+                } else {
+                    if ((rand() % 2 + 1) == 1) {
+                        current->eat(*p_bug);
+                    } else {
+                        p_bug->eat(*current);
+                        current = p_bug;
+                    }
             }
-
         }
     }
 }
