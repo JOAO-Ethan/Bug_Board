@@ -120,6 +120,8 @@ string Bug::getFullType(char type) {
             return "Hopper";
         case 'B':
             return "BishopBug";
+        case 'S':
+            return "SuperBug";
         default:
             return "Not a bug";
     }
