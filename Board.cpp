@@ -69,8 +69,11 @@ void Board::load(const string &fname) {
     if (fin) {
         string line;
         while (getline(fin, line)) {
-            bug_vector.push_back(parseLine(line));
-            updateCell(bug_vector.back());
+            Bug* bug = parseLine(line);
+            if(bug != nullptr) {
+                bug_vector.push_back(bug);
+                updateCell(bug_vector.back());
+            }
         }
     }
 }
@@ -202,31 +205,41 @@ bool Board::gameOver() {
 
 void Board::run() {
     int windowSize = 500;
-    sf::RenderWindow window(sf::VideoMode(windowSize, windowSize), "Bug Board");
+    sf::RenderWindow window(sf::VideoMode(windowSize + 250, windowSize), "Bug Board");
     window.setFramerateLimit(10);
     int nbCells = 10;
     sf::Font font;
     sf::Music music;
+    sf::Text infos;
+    int posYInfos;
+    stringstream infoStream;
     if (!font.loadFromFile("../assets/Ubuntu-R.ttf")) {{ cout << "Error while loading font" << endl; }};
     if (!music.openFromFile("../assets/music.ogg")) {{ cout << "Error while loading the music." << endl; }}
     music.setVolume(50.f);
     vector<sf::RectangleShape> board;
     createGrid(board, windowSize, nbCells);
+    sf::RectangleShape infosBg(sf::Vector2f(250, windowSize));
+    infosBg.setPosition(windowSize + 1, 0);
+    infosBg.setFillColor(sf::Color::White);
+
+
     SuperBug *player = (SuperBug *) (*find_if(bug_vector.begin(), bug_vector.end(),
                                               [](Bug *p_bug) { return p_bug->getType() == 'S'; }));
     auto beginning = chrono::high_resolution_clock::now();
     while (!gameOver() && window.isOpen()) {
         sf::Event event{};
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
-            if (music.getStatus() != sf::SoundSource::Status::Playing) { music.play(); }
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-            if (music.getStatus() == sf::SoundSource::Status::Playing) { music.pause(); }
-        if (player->isAlive()) {
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) movePlayer(West, player);
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) movePlayer(East, player);
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) movePlayer(North, player);
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) movePlayer(South, player);
+        if (window.hasFocus()) {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
+                if (music.getStatus() != sf::SoundSource::Status::Playing) { music.play(); }
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+                if (music.getStatus() == sf::SoundSource::Status::Playing) { music.pause(); }
+            if (player->isAlive()) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) movePlayer(West, player);
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) movePlayer(East, player);
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) movePlayer(North, player);
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) movePlayer(South, player);
+            }
         }
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
@@ -249,6 +262,23 @@ void Board::run() {
 
         }
         drawBugs(window, font, windowSize, nbCells);
+
+        window.draw(infosBg);
+        posYInfos = 0;
+        for (auto p_bug: bug_vector) {
+            infoStream.str("");
+            infoStream.clear();
+            infoStream << *p_bug << endl;
+
+            infos.setFont(font);
+            if (p_bug->isAlive()) infos.setFillColor(sf::Color::Black);
+            else infos.setFillColor(sf::Color::Red);
+            infos.setCharacterSize(13);
+            infos.setString(infoStream.str());
+            infos.setPosition(windowSize + 1, posYInfos);
+            posYInfos += infos.getCharacterSize() + 1;
+            window.draw(infos);
+        }
         window.display();
     }
     displayBugs();
@@ -337,7 +367,6 @@ void Board::createGrid(vector<sf::RectangleShape> &board, int windowSize, int nb
 void Board::movePlayer(Direction direction, SuperBug *player) {
     player->move(direction);
     updateCell(player);
-    cout << cells.find(player->getPosition())->second.size();
     fight(player->getPosition());
 }
 
@@ -346,23 +375,25 @@ void Board::fight(const pair<int, int> &position) {
     if (cell->second.size() > 1) {
         auto current = cell->second.front();
         cout << current->getId() << endl;
-        while(!current->isAlive()){current++; cout << current->getId() << endl;}
+        while (!current->isAlive()) {
+            current++;
+        }
         for (auto p_bug: cell->second) {
             if (p_bug == current) continue;
 
             if (!p_bug->isAlive()) continue;
-                if (current->getSize() > p_bug->getSize()) {
+            if (current->getSize() > p_bug->getSize()) {
+                current->eat(*p_bug);
+            } else if (current->getSize() < p_bug->getSize()) {
+                p_bug->eat(*current);
+                current = p_bug;
+            } else {
+                if ((rand() % 2 + 1) == 1) {
                     current->eat(*p_bug);
-                } else if (current->getSize() < p_bug->getSize()) {
+                } else {
                     p_bug->eat(*current);
                     current = p_bug;
-                } else {
-                    if ((rand() % 2 + 1) == 1) {
-                        current->eat(*p_bug);
-                    } else {
-                        p_bug->eat(*current);
-                        current = p_bug;
-                    }
+                }
             }
         }
     }
