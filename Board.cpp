@@ -69,8 +69,8 @@ void Board::load(const string &fname) {
     if (fin) {
         string line;
         while (getline(fin, line)) {
-            Bug* bug = parseLine(line);
-            if(bug != nullptr) {
+            Bug *bug = parseLine(line);
+            if (bug != nullptr) {
                 bug_vector.push_back(bug);
                 updateCell(bug_vector.back());
             }
@@ -222,6 +222,8 @@ void Board::run() {
     infosBg.setPosition(windowSize + 1, 0);
     infosBg.setFillColor(sf::Color::White);
 
+    pair<int, int> mouseCoordinates{10,10};
+    sf::CircleShape flag((windowSize/nbCells)/2-1);
 
     SuperBug *player = (SuperBug *) (*find_if(bug_vector.begin(), bug_vector.end(),
                                               [](Bug *p_bug) { return p_bug->getType() == 'S'; }));
@@ -239,6 +241,10 @@ void Board::run() {
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) movePlayer(East, player);
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) movePlayer(North, player);
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) movePlayer(South, player);
+            }
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+                mouseCoordinates = {sf::Mouse::getPosition(window).x / (windowSize / nbCells),
+                                    sf::Mouse::getPosition(window).y / (windowSize / nbCells)};
             }
         }
         while (window.pollEvent(event)) {
@@ -261,8 +267,11 @@ void Board::run() {
             window.draw(rect);
 
         }
-        drawBugs(window, font, windowSize, nbCells);
-
+        if(mouseCoordinates.first < 10 && mouseCoordinates.second < 10){
+            flag.setPosition(mouseCoordinates.first * (windowSize/nbCells), mouseCoordinates.second * (windowSize/nbCells));
+            flag.setFillColor(sf::Color(200,200,200));
+            window.draw(flag);
+        }
         window.draw(infosBg);
         posYInfos = 0;
         for (auto p_bug: bug_vector) {
@@ -271,14 +280,21 @@ void Board::run() {
             infoStream << *p_bug << endl;
 
             infos.setFont(font);
-            if (p_bug->isAlive()) infos.setFillColor(sf::Color::Black);
-            else infos.setFillColor(sf::Color::Red);
+            infos.setStyle(sf::Text::Regular);
+            if (p_bug->isAlive()) {
+                if (p_bug == player) infos.setFillColor(sf::Color::Green);
+                else infos.setFillColor(sf::Color::Black);
+                if (p_bug->getPosition() == mouseCoordinates) {
+                    infos.setStyle(sf::Text::Bold);
+                }
+            } else infos.setFillColor(sf::Color::Red);
             infos.setCharacterSize(13);
             infos.setString(infoStream.str());
             infos.setPosition(windowSize + 1, posYInfos);
             posYInfos += infos.getCharacterSize() + 1;
             window.draw(infos);
         }
+        drawBugs(window, font, windowSize, nbCells);
         window.display();
     }
     displayBugs();
