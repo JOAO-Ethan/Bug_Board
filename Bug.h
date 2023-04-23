@@ -14,14 +14,13 @@ enum Direction : int {
 std::ostream &operator<<(std::ostream &out, Direction d);
 
 class Bug {
-private:
+protected:
     int id, size, idKiller;
     std::pair<int, int> position;
     Direction direction;
     bool alive;
     std::list<std::pair<int, int>> path;
 
-protected:
     //setters
     void setDirection(Direction dir);
 
