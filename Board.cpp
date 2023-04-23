@@ -170,6 +170,13 @@ ostream &Board::printLifeHistories(ostream &out) const {
 }
 
 void Board::updateCell(Bug *p_bug) {
+    for(auto cell : cells){
+        auto here = find(cell.second.begin(), cell.second.end(), p_bug);
+        if( here != cell.second.end() ){
+            cell.second.erase(here);
+            break;
+        }
+    }
     if (auto pos = cells.find(p_bug->getPosition()); pos != cells.end()) {
         pos->second.push_back(p_bug);
     } else {
